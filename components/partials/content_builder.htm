@@ -1,0 +1,39 @@
+<div class="builder">
+    {% for block in content %}
+
+    {% if block._group == "blockText" %}
+    {% partial '@block.text.htm' block=block %}
+
+    {% elseif block._group == "blockHtml" %}
+    {% partial '@block.html.htm' block=block %}
+
+    {% elseif block._group == "blockImage" %}
+    {% partial '@block.image.htm' block=block %}
+
+    {% elseif block._group == "blockCollectionText" %}
+    {% partial '@block.collection.text.htm' block=block %}
+
+    {% elseif block._group == "blockCollectionImage" %}
+    {% partial '@block.collection.image.htm' block=block %}
+
+    {% elseif block._group == "blockYoutube" %}
+    {% partial '@block.youtube.htm' block=block %}
+
+    {% elseif block._group == "blockQuote" %}
+    {% partial '@block.quote.htm' block=block %}
+
+    {% elseif block._group == "blockMap" %}
+    {% partial '@block.map.htm' block=block %}
+
+    {% else %}
+
+    {% if this.environment != "prod" %}
+    Block not found: "{{ block._group }}"
+    {% endif %}
+
+    {# type not found #}
+
+    {% endif %}
+
+    {% endfor %}
+</div>

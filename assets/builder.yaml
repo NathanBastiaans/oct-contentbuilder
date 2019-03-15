@@ -1,0 +1,64 @@
+blockEditor:
+    name: nathan.contentbuilder::lang.builder.blocks.editor.name
+    fields:
+        block_editor:
+            label: nathan.contentbuilder::lang.builder.blocks.editor.block_editor
+            type: section
+        editor_content:
+            label: nathan.contentbuilder::lang.builder.blocks.editor.editor_content
+            type: richeditor
+
+blockImage:
+    name: nathan.contentbuilder::lang.builder.blocks.image.name
+    fields:
+        block_image:
+            label: nathan.contentbuilder::lang.builder.blocks.image.block_image
+            type: section
+
+        image_description:
+            label: nathan.contentbuilder::lang.builder.blocks.image.image_description
+            type: richeditor
+            size: small
+            span: left
+
+        image_path:
+            required: true
+            label: nathan.contentbuilder::lang.builder.blocks.image.image_path
+            type: mediafinder
+            mode: image
+            imageHeight: 240
+            imageWidth: 240
+            span: right
+
+        image_alt:
+            span: left
+            label: nathan.contentbuilder::lang.builder.blocks.image.image_alt
+
+        is_image_full_width:
+            label: nathan.contentbuilder::lang.builder.blocks.image.is_image_full_width
+            span: left
+            type: switch
+
+blockQuote:
+    name: nathan.contentbuilder::lang.builder.blocks.quote.name
+    fields:
+        block_quote:
+            label: nathan.contentbuilder::lang.builder.blocks.quote.block_quote
+            type: section
+
+        quote_content:
+            label: nathan.contentbuilder::lang.builder.blocks.quote.quote_content
+        quote_author:
+            label: nathan.contentbuilder::lang.builder.blocks.quote.quote_author
+
+blockVideo:
+    name: nathan.contentbuilder::lang.builder.blocks.video.name
+    fields:
+        block_video:
+            label: nathan.contentbuilder::lang.builder.blocks.video.block_video
+            type: section
+
+        video_type:
+            label: nathan.contentbuilder::lang.builder.blocks.video.block_video
+        video_url:
+            label: nathan.contentbuilder::lang.builder.blocks.video.block_video
