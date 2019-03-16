@@ -1,27 +1,48 @@
 <?php
 
 return [
+    'plugin' => [
+        'name' => 'Content Builder',
+        'description' => 'Replaces existing fields with a content builder'
+    ],
     'builder' => [
         'blocks' => [
             'editor' => [
-                'name' => 'Editor block',
-                'block_editor' => 'Editor',
+                'name'           => 'Editor block',
+                'block_editor'   => 'Editor',
                 'editor_content' => 'Content'
             ],
             'image' => [
-                'name' => 'Image block',
+                'name'                => 'Image block',
+                'block_image'         => 'Image',
+                'image_description'   => 'Description',
+                'image_path'          => 'Image',
+                'image_alt'           => 'Alternative',
+                'is_image_full_width' => 'Display image full width'
+
             ],
             'quote' => [
-                'name' => 'Quote block',
+                'name'          => 'Quote block',
+                'block_quote'   => 'Quote',
+                'quote_content' => 'Quote',
+                'quote_author'  => 'Author'
             ],
             'video' => [
-                'name' => 'Video block',
-            ],
+                'name'               => 'Video block',
+                'block_video'        => 'Video',
+                'video_type'         => 'Video type',
+                'video_url'          => 'Video URL',
+                'video_type_options' => [
+                    'youtube' => 'YouTube',
+                    'vimeo'   => 'Vimeo',
+                    'empty'   => 'Select a video type'
+                ]
+            ]
         ],
         'misc' => [
             'repeater_prompt' => 'Add another block',
-            'default_tab' => 'Content builder',
-            'default_label' => 'Content builder'
+            'default_tab'     => 'Content builder',
+            'default_label'   => 'Content builder'
         ]
     ],
     'validation' => [
@@ -42,6 +63,6 @@ return [
         ],
         'video_url' => [
             'required' => 'The video url in the Video block is required'
-        ],
+        ]
     ]
 ];

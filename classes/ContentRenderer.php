@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Event;
 /**
  * Class ContentRenderer
  */
-class ContentRenderer {
+class ContentRenderer
+{
 
     /**
      * @param $content
@@ -24,22 +25,20 @@ class ContentRenderer {
 
         // Loop through all the blocks
         foreach ($content as $block) {
-
             if (array_get($block, '_group') == "block_video") {
-
                 if (array_get($block, 'video_type') == 'youtube') {
                     $block['video_id'] = $this->parseYoutubeUrl(array_get($block, 'video_url'));
+                } elseif (array_get($block, 'video_type') == 'vimeo') {
+                    $block['video_id'] = $this->parseVimeoUrl(array_get($block, 'video_url'));
                 }
 
                 // The video id is false if the URL wasn't parsed correctly so we shouldn't add the block
                 if (!$block['video_id']) {
                     continue;
                 }
-
             }
 
             $parsed_content[] = $block;
-
         }
 
         // You can hook into this event to do our own custom parsing after the default parsing
@@ -64,7 +63,9 @@ class ContentRenderer {
     {
         if (preg_match(
             '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i',
-            $url, $match)
+            $url,
+            $match
+        )
         ) {
             return $match[1];
         } else {
@@ -72,4 +73,24 @@ class ContentRenderer {
         }
     }
 
+    /**
+     * Convert the video block data for the front-end
+     *
+     * @param string $url The URL to parse
+     *
+     * @return mixed
+     */
+    protected function parseVimeoUrl($url)
+    {
+        if (preg_match(
+            '/(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/([a-z]*\/)*([0-9]{6,11})[?]?.*/',
+            $url,
+            $match
+        )
+        ) {
+            return $match[1];
+        } else {
+            return false;
+        }
+    }
 }

@@ -12,12 +12,16 @@ use October\Rain\Extension\ExtensionBase;
 class BuilderBehaviour extends ExtensionBase
 {
     /**
-     * @var
+     * Holds the class name
+     *
+     * @var string
      */
     protected $model_class;
 
     /**
-     * @var
+     * Holds the parent object
+     *
+     * @var Model|Page
      */
     protected $parent;
 
@@ -32,20 +36,33 @@ class BuilderBehaviour extends ExtensionBase
 
         $this->model_class = get_class($parent);
 
-        $this->bootPageBuilder();
+        $this->bootContentBuilder();
     }
 
     /**
+     * This method boots all content builder behaviour
+     *
      * @return void
      */
-    public function bootPageBuilder()
+    public function bootContentBuilder()
     {
         // Check if the extended class is actually a supported model
         $this->checkModelForContentBuilder();
 
+        // Add a dynamic getter for the builders in case t does not exist
+        if (!method_exists($this->parent, 'getBuilders')) {
+            $this->parent->addDynamicMethod(
+                'getBuilders',
+                function () {
+                    return $this->parent->_builders;
+                }
+            );
+        }
+
         // If the the addJsonable method doesn't exist it's probably a RainLab page
         if (method_exists($this->parent, 'addJsonable')) {
-            foreach ($this->parent->builders as $key => $builder) {
+
+            foreach ($this->parent->getBuilders() as $key => $builder) {
                 $this->parent->addJsonable(
                     is_array($builder)
                         ? $key
@@ -59,19 +76,8 @@ class BuilderBehaviour extends ExtensionBase
             }
         }
 
-        // Add a dynamic getter for the builders
-        if (!method_exists($this->parent, 'getBuilders')) {
-            $this->parent->addDynamicMethod(
-                'getBuilders',
-                function () {
-                    return $this->parent->builders;
-                }
-            );
-        }
-
         $this->parent::extend(
             function ($model) {
-
                 if (get_class($model) == Page::class) {
                     // Extensions for RainLab pages
                     $this->extendRainLabPages($model);
@@ -90,7 +96,8 @@ class BuilderBehaviour extends ExtensionBase
     /**
      * Return the values from the builder fields by key
      *
-     * @param $key
+     * @param string $key The key in the config
+     *
      * @return array
      */
     public function getBuilderValuesByKey($key)
@@ -106,7 +113,7 @@ class BuilderBehaviour extends ExtensionBase
         );
 
         // Format the values
-        $tab   = array_get($builder, 'tab',   $default_tab);
+        $tab   = array_get($builder, 'tab', $default_tab);
         $label = array_get($builder, 'label', $default_label);
 
         // Used for custom builder yaml files
@@ -148,7 +155,6 @@ class BuilderBehaviour extends ExtensionBase
                     . " behaviour has no builders"
                 );
             }
-
         } catch (IncompatibleModelException $e) {
             trace_log($e->getMessage());
         }
@@ -163,7 +169,7 @@ class BuilderBehaviour extends ExtensionBase
     {
         // todo this has only been tested in the back-end front end testing needs to happen
         $model->bindEvent('model.beforeSave', function () use ($model) {
-            if($model->markup) {
+            if ($model->markup) {
                 $model->markup = json_encode($model->markup);
             }
         });
@@ -177,6 +183,8 @@ class BuilderBehaviour extends ExtensionBase
 
     /**
      * Extend the fetch event of the model
+     *
+     * @param Model $model The model object
      *
      * @return void
      */
@@ -195,9 +203,10 @@ class BuilderBehaviour extends ExtensionBase
         );
     }
 
-
     /**
      * Extend the delete event of the model
+     *
+     * @param Model $model The model object
      *
      * @return void
      */
@@ -215,6 +224,8 @@ class BuilderBehaviour extends ExtensionBase
     /**
      * Extend the save and validation events of the model
      *
+     * @param Model $model The model object
+     *
      * @return void
      */
     protected function extendModelSaving($model)
@@ -229,7 +240,6 @@ class BuilderBehaviour extends ExtensionBase
         $model->bindEvent(
             'model.beforeValidate',
             function () use ($model) {
-
                 Event::fire('nathan.contentbuilder.beforeValidate', [&$model]);
 
                 // The default validation rule.
@@ -239,11 +249,10 @@ class BuilderBehaviour extends ExtensionBase
                 // Translation base
                 $base = 'nathan.contentbuilder::lang.validation.';
 
-                foreach($model->getBuilders() as $key => $builder) {
-
+                foreach ($model->getBuilders() as $key => $builder) {
                     $field = array_get(
                         $model->getBuilderValuesByKey($key),
-                            'field'
+                        'field'
                     );
 
                     // Add the validation rules for the field

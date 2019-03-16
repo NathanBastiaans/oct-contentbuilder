@@ -22,10 +22,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'ContentBuilder',
+            'name'        => 'nathan.contentbuilder::lang.',
             'description' => 'No description provided yet...',
-            'author'      => 'Nathan',
-            'icon'        => 'icon-leaf'
+            'author'      => 'Nathan Bastiaans',
+            'icon'        => 'icon-pencil'
         ];
     }
 
@@ -38,7 +38,7 @@ class Plugin extends PluginBase
     {
         return [
             'filters' => [
-                'contentBuilder' => function($content) {
+                'contentBuilder' => function ($content) {
                     $renderer = new \ContentRenderer();
                     return $renderer->renderContent($content);
                 }
@@ -70,7 +70,6 @@ class Plugin extends PluginBase
      */
     protected function extendModelClasses()
     {
-
         if (!is_array(config('nathan.contentbuilder::models'))) {
             return;
         }
@@ -86,12 +85,12 @@ class Plugin extends PluginBase
 
                     // Add the builders config to the model so it can be used later
                     $model->addDynamicProperty(
-                        'builders',
+                        '_builders',
                         array_get($data, 'builders')
                     );
 
                     // Check to avoid double extensions which cause exceptions
-                    if(!$model->isClassExtendedWith(BuilderBehaviour::class)) {
+                    if (!$model->isClassExtendedWith(BuilderBehaviour::class)) {
                         $model->extendClassWith(BuilderBehaviour::class);
                     }
                 }
@@ -114,7 +113,6 @@ class Plugin extends PluginBase
         }
 
         foreach ($widget->model->getBuilders() as $key => $builder) {
-
             $builder = $widget->model->getBuilderValuesByKey($key);
 
             $tab            = array_get($builder, 'tab');
