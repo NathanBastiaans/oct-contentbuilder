@@ -4,8 +4,7 @@ use Backend;
 use Backend\Widgets\Form;
 use Illuminate\Support\Facades\Event;
 use Nathan\ContentBuilder\Behaviours\BuilderBehaviour;
-use October\Rain\Database\Model;
-use October\Rain\Support\Facades\Flash;
+use Nathan\ContentBuilder\Classes\ContentRenderer;
 use RainLab\Pages\Classes\Page;
 use System\Classes\PluginBase;
 
@@ -22,8 +21,8 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'nathan.contentbuilder::lang.',
-            'description' => 'No description provided yet...',
+            'name'        => 'nathan.contentbuilder::lang.plugin.name',
+            'description' => 'nathan.contentbuilder::lang.plugin.description',
             'author'      => 'Nathan Bastiaans',
             'icon'        => 'icon-pencil'
         ];
@@ -39,7 +38,7 @@ class Plugin extends PluginBase
         return [
             'filters' => [
                 'contentBuilder' => function ($content) {
-                    $renderer = new \ContentRenderer();
+                    $renderer = new ContentRenderer();
                     return $renderer->renderContent($content);
                 }
             ]
@@ -61,6 +60,17 @@ class Plugin extends PluginBase
                 $this->addBuilderToModel($widget);
             }
         );
+
+        Event::listen('pages.object.save', function ($controller, $object, $type) {
+
+            logger(json_encode([$controller, $object, $type]));
+
+            if ($type != 'page') {
+                return;
+            }
+
+            logger($object);
+        });
     }
 
     /**
@@ -82,13 +92,6 @@ class Plugin extends PluginBase
 
             $model_class::extend(
                 function ($model) use ($data) {
-
-                    // Add the builders config to the model so it can be used later
-                    $model->addDynamicProperty(
-                        '_builders',
-                        array_get($data, 'builders')
-                    );
-
                     // Check to avoid double extensions which cause exceptions
                     if (!$model->isClassExtendedWith(BuilderBehaviour::class)) {
                         $model->extendClassWith(BuilderBehaviour::class);
@@ -113,23 +116,26 @@ class Plugin extends PluginBase
         }
 
         foreach ($widget->model->getBuilders() as $key => $builder) {
-            $builder = $widget->model->getBuilderValuesByKey($key);
 
+            $field          = $key;
             $tab            = array_get($builder, 'tab');
             $label          = array_get($builder, 'label');
-            $field          = array_get($builder, 'field');
             $custom_builder = array_get($builder, 'builder_config', null);
 
             // Remove any existing content fields to avoid having to double fill your data
             $widget->removeField($field);
 
+            if (get_class($widget->model) == Page::class) {
+                $field = 'viewBag['.$field.']';
+            }
+
             // Add the field with the correct parameters
             $widget->addTabFields(
                 [
                     $field => [
-                        'label'  => $label,
-                        'tab'    => $tab,
-                        'type'   => 'repeater',
+                        'label' => $label,
+                        'tab' => $tab,
+                        'type' => 'repeater',
                         'prompt' => 'nathan.contentbuilder::lang.builder.misc.repeater_prompt',
                         'groups' => ($custom_builder
                             ? $custom_builder
@@ -146,6 +152,7 @@ class Plugin extends PluginBase
                 array_flip([$tab]),
                 $fields
             );
+
         }
     }
 }

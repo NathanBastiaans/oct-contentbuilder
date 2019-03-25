@@ -6,6 +6,7 @@ use Cms\Classes\Content;
 use Illuminate\Support\Facades\Event;
 use Nathan\ContentBuilder\Exceptions\IncompatibleModelException;
 use October\Rain\Database\Model;
+use October\Rain\Support\Facades\Flash;
 use RainLab\Pages\Classes\Page;
 use October\Rain\Extension\ExtensionBase;
 
@@ -54,7 +55,13 @@ class BuilderBehaviour extends ExtensionBase
             $this->parent->addDynamicMethod(
                 'getBuilders',
                 function () {
-                    return $this->parent->_builders;
+                    $data = collect(config('nathan.contentbuilder::models'))->filter(function($item) {
+                        return array_get($item, 'model_class') == $this->model_class;
+                    })->map(function($item) {
+                        return array_get($item, 'builders');
+                    })->toArray();
+
+                    return array_first($data);
                 }
             );
         }
@@ -93,45 +100,6 @@ class BuilderBehaviour extends ExtensionBase
         );
     }
 
-    /**
-     * Return the values from the builder fields by key
-     *
-     * @param string $key The key in the config
-     *
-     * @return array
-     */
-    public function getBuilderValuesByKey($key)
-    {
-        // Defaults
-        $default_tab   = trans('nathan.contentbuilder::lang.builder.misc.default_tab');
-        $default_label = trans('nathan.contentbuilder::lang.builder.misc.default_label');
-
-        // Get the builder values by key
-        $builder = array_get(
-            $this->parent->getBuilders(),
-            $key
-        );
-
-        // Format the values
-        $tab   = array_get($builder, 'tab', $default_tab);
-        $label = array_get($builder, 'label', $default_label);
-
-        // Used for custom builder yaml files
-        $builder_config = array_get($builder, 'builder_config', false);
-
-        $field = is_array($builder)
-            ? $key
-            : array_get($this->parent->getBuilders(), $key);
-
-        // Return formatted values
-        return [
-            'tab'            => $tab,
-            'label'          => $label,
-            'field'          => $field,
-            'key'            => $key,
-            'builder_config' => $builder_config,
-        ];
-    }
 
     /**
      * Check if the behaviour is extending a compatible model
@@ -149,12 +117,6 @@ class BuilderBehaviour extends ExtensionBase
                 );
             }
 
-            if (!is_array($this->parent->builders)) {
-                throw new IncompatibleModelException(
-                    "The class '".$this->model_class."' using the PageBuilder"
-                    . " behaviour has no builders"
-                );
-            }
         } catch (IncompatibleModelException $e) {
             trace_log($e->getMessage());
         }
@@ -167,16 +129,16 @@ class BuilderBehaviour extends ExtensionBase
      */
     protected function extendRainLabPages($model)
     {
-        // todo this has only been tested in the back-end front end testing needs to happen
-        $model->bindEvent('model.beforeSave', function () use ($model) {
-            if ($model->markup) {
-                $model->markup = json_encode($model->markup);
-            }
-        });
 
+        // todo this has only been tested in the back-end front end testing needs to happen
         $model->bindEvent('model.afterFetch', function () use ($model) {
-            if (is_string($model->markup)) {
-                $model->markup = json_decode($model->markup, true);
+
+
+            foreach ($model->getBuilders() as $key => $builder) {
+                if ($item = array_get($model->attributes['viewBag'], $key)) {
+                    $model->attributes[$key] = json_encode($item, true);
+                    unset($model->attributes['viewBag'][$key]);
+                }
             }
         });
     }
@@ -250,10 +212,7 @@ class BuilderBehaviour extends ExtensionBase
                 $base = 'nathan.contentbuilder::lang.validation.';
 
                 foreach ($model->getBuilders() as $key => $builder) {
-                    $field = array_get(
-                        $model->getBuilderValuesByKey($key),
-                        'field'
-                    );
+                    $field = $key;
 
                     // Add the validation rules for the field
                     $model->rules = array_merge(

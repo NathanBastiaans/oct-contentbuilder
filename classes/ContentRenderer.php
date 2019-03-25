@@ -1,4 +1,6 @@
 <?php
+namespace Nathan\ContentBuilder\Classes;
+
 use Illuminate\Support\Facades\Event;
 
 /**
@@ -13,9 +15,13 @@ class ContentRenderer
      */
     public function renderContent($content)
     {
-        // If it's no array it's probably no contentbuilder
+        // If it's no array it's probably no content builder
         if (!is_array($content)) {
-            return $content;
+            try {
+                $content = json_decode($content, true);
+            } catch (\Exception $e) {
+                return $content;
+            }
         }
 
         // You can hook into this event to do your own custom parsing

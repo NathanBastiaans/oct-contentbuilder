@@ -12,6 +12,7 @@ return [
                     'tab'   => 'Comment builder',
                     'label' => 'Lekker comments bouwen'
                 ],
+
             ]
         ],
         [
