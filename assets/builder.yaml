@@ -9,6 +9,17 @@ blockEditor:
             label: nathan.contentbuilder::lang.builder.blocks.editor.editor_content
             type: richeditor
 
+blockMarkdown:
+    name: nathan.contentbuilder::lang.builder.blocks.markdown.name
+    icon: icon-terminal
+    fields:
+        block_markdown:
+            label: nathan.contentbuilder::lang.builder.blocks.markdown.block_markdown
+            type: section
+        markdown_content:
+            label: nathan.contentbuilder::lang.builder.blocks.markdown.markdown_content
+            type: markdown
+
 blockImage:
     name: nathan.contentbuilder::lang.builder.blocks.image.name
     icon: icon-image

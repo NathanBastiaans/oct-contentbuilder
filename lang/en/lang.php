@@ -18,6 +18,11 @@ return [
                 'block_editor'   => 'Editor',
                 'editor_content' => 'Content'
             ],
+            'markdown' => [
+                'name'             => 'Markdown block',
+                'block_markdown'   => 'Markdown',
+                'markdown_content' => 'Content'
+            ],
             'image' => [
                 'name'                => 'Image block',
                 'block_image'         => 'Image',

@@ -4,6 +4,8 @@
             {% partial '@block.editor.htm' block=block %}
         {% elseif block._group == "blockImage" %}
             {% partial '@block.image.htm' block=block %}
+        {% elseif block._group == "blockMarkdown" %}
+            {% partial '@block.markdown.htm' block=block %}
         {% elseif block._group == "blockQuote" %}
             {% partial '@block.quote.htm' block=block %}
         {% elseif block._group == "blockVideo" %}
