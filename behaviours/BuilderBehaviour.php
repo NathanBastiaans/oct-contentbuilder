@@ -129,10 +129,11 @@ class BuilderBehaviour extends ExtensionBase
      */
     protected function extendRainLabPages($model)
     {
-
         // todo this has only been tested in the back-end front end testing needs to happen
         $model->bindEvent('model.afterFetch', function () use ($model) {
-
+            if (request()->is(config('cms.backendUri').'*')) {
+                return;
+            }
 
             foreach ($model->getBuilders() as $key => $builder) {
                 if ($item = array_get($model->attributes['viewBag'], $key)) {
@@ -140,6 +141,7 @@ class BuilderBehaviour extends ExtensionBase
                     unset($model->attributes['viewBag'][$key]);
                 }
             }
+
         });
     }
 
@@ -227,6 +229,11 @@ class BuilderBehaviour extends ExtensionBase
                         ]
                     );
 
+                    // Only do custom messages if possible
+                    // todo fix the custom messages always showing
+                    if (!is_array($model->customMessages)) {
+                        continue;
+                    }
                     $messages = [
                         $field.'.*.editor_content.required' => trans($base.'editor_content.required'),
                         $field.'.*.image_path.required'     => trans($base.'image_path.required'),
@@ -236,9 +243,6 @@ class BuilderBehaviour extends ExtensionBase
                         $field.'.*.video_url.required'      => trans($base.'video_url.required'),
                     ];
 
-                    if (!is_array($model->customMessages)) {
-                        $model->customMessages = [];
-                    }
 
                     $model->customMessages = array_merge(
                         $model->customMessages,

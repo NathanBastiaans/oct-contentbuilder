@@ -2,9 +2,10 @@
 
 use Backend;
 use Backend\Widgets\Form;
+use Cms\Classes\Controller;
 use Illuminate\Support\Facades\Event;
 use Nathan\ContentBuilder\Behaviours\BuilderBehaviour;
-use Nathan\ContentBuilder\Classes\ContentRenderer;
+use Nathan\ContentBuilder\Components\ContentRenderer;
 use RainLab\Pages\Classes\Page;
 use System\Classes\PluginBase;
 
@@ -28,20 +29,10 @@ class Plugin extends PluginBase
         ];
     }
 
-    /**
-     * Register markup tags
-     *
-     * @return array
-     */
-    public function registerMarkupTags()
+    public function registerComponents()
     {
         return [
-            'filters' => [
-                'contentBuilder' => function ($content) {
-                    $renderer = new ContentRenderer();
-                    return $renderer->renderContent($content);
-                }
-            ]
+            ContentRenderer::class => 'contentRenderer',
         ];
     }
 
@@ -55,22 +46,29 @@ class Plugin extends PluginBase
         $this->extendModelClasses();
 
         Event::listen(
+            'cms.page.init',
+            function (Controller $controller) {
+                $controller->addComponent(
+                    ContentRenderer::class,
+                    'contentRenderer',
+                    [],
+                    true
+                );
+            }
+        );
+
+        Event::listen('pages.object.save', function ($controller, $object, $type) {
+            if ($type != 'page') {
+                return;
+            }
+        });
+
+        Event::listen(
             'backend.form.extendFields',
             function ($widget) {
                 $this->addBuilderToModel($widget);
             }
         );
-
-        Event::listen('pages.object.save', function ($controller, $object, $type) {
-
-            logger(json_encode([$controller, $object, $type]));
-
-            if ($type != 'page') {
-                return;
-            }
-
-            logger($object);
-        });
     }
 
     /**

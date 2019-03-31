@@ -1,19 +1,23 @@
-<?php
-namespace Nathan\ContentBuilder\Classes;
+<?php namespace Nathan\ContentBuilder\Components;
 
+use Cms\Classes\ComponentBase;
 use Illuminate\Support\Facades\Event;
 
-/**
- * Class ContentRenderer
- */
-class ContentRenderer
+class ContentRenderer extends ComponentBase
 {
+    public function componentDetails()
+    {
+        return [
+            'name'        => 'nathan.contentbuilder::lang.components.contentRenderer.name',
+            'description' => 'nathan.contentbuilder::lang.components.contentRenderer.description'
+        ];
+    }
 
     /**
      * @param $content
      * @return mixed
      */
-    public function renderContent($content)
+    public function renderContent($content = '')
     {
         // If it's no array it's probably no content builder
         if (!is_array($content)) {
@@ -31,7 +35,7 @@ class ContentRenderer
 
         // Loop through all the blocks
         foreach ($content as $block) {
-            if (array_get($block, '_group') == "block_video") {
+            if (array_get($block, '_group') == "blockVideo") {
                 if (array_get($block, 'video_type') == 'youtube') {
                     $block['video_id'] = $this->parseYoutubeUrl(array_get($block, 'video_url'));
                 } elseif (array_get($block, 'video_type') == 'vimeo') {
@@ -51,10 +55,8 @@ class ContentRenderer
         Event::fire('nathan.contentbuilder.afterParse', [&$parsed_content]);
 
         return $this->renderPartial(
-            "@content_builder.htm",
-            [
-                'content' => $parsed_content
-            ]
+            '@content_builder.htm',
+            ['content' => $parsed_content]
         );
     }
 

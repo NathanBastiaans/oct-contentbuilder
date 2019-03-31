@@ -5,6 +5,12 @@ return [
         'name' => 'Content Builder',
         'description' => 'Replaces existing fields with a content builder'
     ],
+    'components' => [
+        'contentRenderer' => [
+            'name' => 'Content Renderer',
+            'description' => 'Provides helping methods to render the content'
+        ]
+    ],
     'builder' => [
         'blocks' => [
             'editor' => [
