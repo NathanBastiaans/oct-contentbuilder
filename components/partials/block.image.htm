@@ -1,3 +1,10 @@
 <div class="block block-image">
-    {{ block.content | raw }}
+    {{ block.is_image_full_width | raw }}
+    <img src="{{ block.image_path | media }}" alt="{{ block.image_alt }}" />
+
+    {% if block.image_description %}
+        <p class="image-description">
+            {{ block.image_description | raw }}
+        </p>
+    {% endif %}
 </div>

@@ -1,3 +1,9 @@
 <div class="block block-video">
-    {{ block.content | raw }}
+    <div class="embed-responsive embed-responsive-16by9">
+        {% if block.video_type == "youtube" %}
+            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{{ block.video_id }}?rel=0" allowfullscreen></iframe>
+        {% elseif block.video_type == "vimeo" %}
+            <iframe src="//player.vimeo.com/video/{{ block.video_id }}"></iframe>
+        {% endif %}
+    </div>
 </div>

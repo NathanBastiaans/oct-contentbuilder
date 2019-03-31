@@ -1,3 +1,6 @@
 <div class="block block-quote">
-    {{ block.content | raw }}
+    <blockquote>
+        "{{ block.quote_content }}"
+        <cite>{{ block.quote_author }}</cite>
+    </blockquote>
 </div>

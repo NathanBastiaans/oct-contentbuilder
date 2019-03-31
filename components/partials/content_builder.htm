@@ -9,7 +9,7 @@
         {% elseif block._group == "blockQuote" %}
             {% partial '@block.quote.htm' block=block %}
         {% elseif block._group == "blockVideo" %}
-            {% partial '@block.video.text.htm' block=block %}
+            {% partial '@block.video.htm' block=block %}
         {% else %}
             {% if this.environment == "dev" %}
                 Block not found: "{{ block._group }}"
