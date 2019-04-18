@@ -33,6 +33,10 @@ class ContentRenderer extends ComponentBase
 
         $parsed_content = [];
 
+        if (count($content) < 1) {
+            return $content;
+        }
+
         // Loop through all the blocks
         foreach ($content as $block) {
             if (array_get($block, '_group') == "blockVideo") {
