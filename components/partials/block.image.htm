@@ -1,10 +1,26 @@
-<div class="block block-image">
-    {{ block.is_image_full_width | raw }}
-    <img src="{{ block.image_path | media }}" alt="{{ block.image_alt }}" />
+<div class="container block block-image">
+    {% if not block.is_image_full_width %}
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <img src="{{ block.image_path | media }}" alt="{{ block.image_alt }}" class="img-fluid rounded mx-auto d-block" />
 
-    {% if block.image_description %}
-        <p class="image-description">
-            {{ block.image_description | raw }}
-        </p>
+            {% if block.image_description %}
+                <div class="image-description text-center">
+                    {{ block.image_description | raw }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+        <div class="view overlay zoom rounded">
+            <img src="{{ block.image_path | media }}" alt="{{ block.image_alt }}" class="w-100  mx-auto d-block"/>
+            <div class="mask flex-center">
+                {% if block.image_description %}
+                <span class="image-description text-center">
+                    {{ block.image_description | raw }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
     {% endif %}
 </div>
