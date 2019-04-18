@@ -5,22 +5,22 @@ return [
 
     'models' => [
         // For example:
-        [
-            'model_class' => \Nathan\Contact\Models\Message::class,
-            'builders' => [
-                'comment' => [
-                    'tab'   => 'Comment builder',
-                    'label' => 'Lekker comments bouwen'
-                ],
-
-            ]
-        ],
+        //[
+        //    'model_class' => \Nathan\Contact\Models\Message::class,
+        //    'builders' => [
+        //        'comment' => [
+        //            'tab'   => 'Comment builder',
+        //            'label' => 'Cool comment builder!'
+        //            'builder_config' => 'Path-To-Custom-Builder'
+        //        ]
+        //    ]
+        //]
         [
             'model_class' => \RainLab\Pages\Classes\Page::class,
             'builders'    => [
                 'markup' => [
-                    'tab' => 'hi',
-                    'label' => 'party time',
+                    'tab' => 'Content',
+                    'label' => 'Default content builder',
                 ]
             ]
         ],
