@@ -1,9 +1,32 @@
-.content-builder {
-  .block {
-    .block-editor {}
-    .block-markdown {}
-    .block-image {}
-    .block-quote {}
-    .block-video {}
+.content-builder .block {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+
+  font-size: 1.2rem;
+  &:first-child {
+    margin-top: 3rem;
+  }
+  &:last-child {
+    margin-bottom: 3rem;
+  }
+}
+
+.block-image {
+  .image-description {
+    color: $grey-base;
+    padding-top: 1rem;
+    >:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.block-markdown,
+.block-editor {
+  p {
+    text-align: justify;
+  }
+  p:last-child {
+    margin-bottom: 0;
   }
 }
